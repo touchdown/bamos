@@ -1,0 +1,75 @@
+---
+- name: Provision Product Development Environment
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    local_config_path: "{{ ansible_facts.env.HOME }}/.config/vamos/local_vars.yml"
+
+  pre_tasks:
+    - name: Check for saved identity config
+      ansible.builtin.stat:
+        path: "{{ local_config_path }}"
+      register: local_config_stat
+
+    - name: Load saved identity config
+      ansible.builtin.include_vars:
+        file: "{{ local_config_path }}"
+      when: local_config_stat.stat.exists
+
+    - name: Ensure config directory exists
+      ansible.builtin.file:
+        path: "{{ ansible_facts.env.HOME }}/.config/vamos"
+        state: directory
+        mode: '0700'
+
+    - name: Prompt for Git user name
+      ansible.builtin.pause:
+        prompt: "Git user name:"
+      register: git_name_prompt
+      when: git_user_name is not defined
+
+    - name: Prompt for Git user email
+      ansible.builtin.pause:
+        prompt: "Git user email:"
+      register: git_email_prompt
+      when: git_user_email is not defined
+
+    - name: Resolve Git identity
+      ansible.builtin.set_fact:
+        git_user_name: "{{ git_user_name | default((git_name_prompt | default({})).user_input | default('')) }}"
+        git_user_email: "{{ git_user_email | default((git_email_prompt | default({})).user_input | default('')) }}"
+
+    - name: Validate Git identity
+      ansible.builtin.fail:
+        msg: "Git user name and email cannot be empty."
+      when: not git_user_name or not git_user_email
+
+    - name: Save Git identity locally for future runs
+      ansible.builtin.copy:
+        content: |
+          git_user_name: "{{ git_user_name }}"
+          git_user_email: "{{ git_user_email }}"
+        dest: "{{ local_config_path }}"
+        mode: '0600'
+
+  roles:
+    # 1. System CLI Tools (ripgrep, jq, fzf, etc.)
+    # - role: system_tools
+
+    # 2. Desktop GUI Apps & Developer Fonts
+    # - role: dev_apps
+
+    # 3. Shell Runtime & Configuration (Zsh, OMZ, Aliases)
+    - role: shell_config
+
+    # 4. Identity, Version Control, & GitHub Access
+    - role: git_github
+
+    # 5. Language Tooling (Python 3.12 & uv)
+    - role: python_uv
+
+    # 6. LLM Environment (Ollama, OpenCode Desktop/CLI)
+    - role: llm
+

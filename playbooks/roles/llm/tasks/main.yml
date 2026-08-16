@@ -1,0 +1,37 @@
+---
+# ------------------------------------------------------------------------------
+# 1. Taps & Packages
+# ------------------------------------------------------------------------------
+- name: Tap custom repositories
+  community.general.homebrew_tap:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ llm_taps }}"
+
+- name: Install AI CLI utilities
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ llm_formulae }}"
+
+- name: Install local AI desktop applications
+  community.general.homebrew_cask:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ llm_casks }}"
+
+# ------------------------------------------------------------------------------
+# 2. OpenCode Configuration Setup
+# ------------------------------------------------------------------------------
+- name: Ensure OpenCode config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.config/opencode"
+    state: directory
+    mode: '0755'
+
+- name: Deploy OpenCode configuration pointing to Ollama
+  ansible.builtin.template:
+    src: opencode_config.json.j2
+    dest: "{{ ansible_facts.env.HOME }}/.config/opencode/config.json"
+    mode: '0644'
+

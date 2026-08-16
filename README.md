@@ -1,1 +1,2 @@
-# vamos
+# bamos
+bootstrap envs

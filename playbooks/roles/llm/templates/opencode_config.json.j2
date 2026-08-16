@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.schema.json",
+  "provider": {
+    "ollama": {
+      "options": {
+        "baseURL": "{{ ollama_host }}/v1"
+      },
+      "models": {
+        "{{ opencode_default_model }}": {
+          "name": "{{ opencode_default_model }}"
+        }
+      }
+    }
+  },
+  "model": "ollama/{{ opencode_default_model }}"
+}
+

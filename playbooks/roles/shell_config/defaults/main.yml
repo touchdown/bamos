@@ -1,0 +1,20 @@
+# roles/shell_config/defaults/main.yml
+---
+# Oh My Zsh Configuration
+ohmyzsh_theme: "robbyrussell"
+ohmyzsh_plugins:
+  - git
+  - z
+  - zsh-autosuggestions
+  - zsh-syntax-highlighting
+
+common_aliases:
+  # Navigation
+  - { name: "ll", cmd: "ls -alF" }
+  - { name: "..", cmd: "cd .." }
+  - { name: "...", cmd: "cd ../.." }
+
+  # System & Tools
+  - { name: "ports", cmd: "netstat -tulanp" }
+  - { name: "reload", cmd: "source ~/.zshrc" }
+

@@ -1,0 +1,57 @@
+# roles/shell_config/tasks/main.yml
+---
+# ------------------------------------------------------------------------------
+# 1. Ensure Zsh & Git are present
+# ------------------------------------------------------------------------------
+- name: Ensure Zsh and Git are installed via Homebrew
+  community.general.homebrew:
+    name:
+      - zsh
+      - git
+    state: present
+
+# ------------------------------------------------------------------------------
+# 2. Oh My Zsh Installation
+# ------------------------------------------------------------------------------
+- name: Check if Oh My Zsh is installed
+  ansible.builtin.stat:
+    path: "{{ ansible_facts.env.HOME }}/.oh-my-zsh"
+  register: ohmyzsh_stat
+
+- name: Install Oh My Zsh if missing
+  ansible.builtin.shell: >
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  when: not ohmyzsh_stat.stat.exists
+
+# ------------------------------------------------------------------------------
+# 3. Install Custom OMZ Plugins
+# ------------------------------------------------------------------------------
+- name: Install zsh-autosuggestions plugin
+  ansible.builtin.git:
+    repo: "https://github.com/zsh-users/zsh-autosuggestions.git"
+    dest: "{{ ansible_facts.env.HOME }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    depth: 1
+    update: yes
+
+- name: Install zsh-syntax-highlighting plugin
+  ansible.builtin.git:
+    repo: "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+    dest: "{{ ansible_facts.env.HOME }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+    depth: 1
+    update: yes
+
+# ------------------------------------------------------------------------------
+# 4. Deploy Configuration Files
+# ------------------------------------------------------------------------------
+- name: Deploy .zshrc with configured plugins
+  ansible.builtin.template:
+    src: zshrc.j2
+    dest: "{{ ansible_facts.env.HOME }}/.zshrc"
+    mode: '0644'
+
+- name: Deploy .bash_aliases
+  ansible.builtin.template:
+    src: bash_aliases.j2
+    dest: "{{ ansible_facts.env.HOME }}/.bash_aliases"
+    mode: '0644'
+

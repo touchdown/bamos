@@ -1,0 +1,18 @@
+# ==============================================================================
+# ANSIBLE MANAGED FILE - DO NOT MODIFY DIRECTLY
+# ==============================================================================
+
+{% if common_aliases is defined %}
+# General Navigation & System Aliases
+{% for alias in common_aliases %}
+alias {{ alias.name }}="{{ alias.cmd }}"
+{% endfor %}
+{% endif %}
+
+{% if git_shell_aliases is defined %}
+# Git Shortcuts
+{% for alias in git_shell_aliases %}
+alias {{ alias.name }}="{{ alias.cmd }}"
+{% endfor %}
+{% endif %}
+

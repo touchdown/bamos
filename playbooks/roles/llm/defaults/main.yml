@@ -1,0 +1,15 @@
+---
+llm_taps:
+  - anomalyco/tap
+
+llm_casks:
+  - ollama
+  - opencode-desktop
+
+llm_formulae:
+  - anomalyco/tap/opencode
+
+# Ollama Endpoint & Default Model Settings
+ollama_host: "http://localhost:11434"
+opencode_default_model: "gemma4:26b" # or llama3.2, mistral, etc.
+
