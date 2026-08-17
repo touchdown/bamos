@@ -1,0 +1,3 @@
+# OS-agnostic defaults shared by all playbooks
+---
+ansible_connection: local

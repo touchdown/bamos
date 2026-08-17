@@ -4,29 +4,33 @@
 
 ## About Me
 
-`bamos` is my personal, repeatable way to stand up a fresh macOS workstation. Instead of
+`bamos` is my personal, repeatable way to stand up a fresh workstation. Instead of
 clicking through installers and pasting aliases by hand, a single command walks a new (or
-re-imaged) Mac through the whole pipeline: Xcode Command Line Tools → Homebrew → Ansible →
-provisioning playbooks. The result is a consistent shell, Git identity, and language/LLM
-toolchain on every machine I touch.
+re-imaged) machine through the whole pipeline: base toolchain → Ansible → provisioning
+playbooks. The result is a consistent shell, Git identity, and language/LLM toolchain on
+every machine I touch.
 
 ## Purpose
 
-This repository provisions macOS development environments from scratch, end to end:
+This repository provisions development environments from scratch, end to end:
 
-- **Bootstrap layer** — `bootstrap/bootstrap_macos.sh` installs and verifies the base
-  toolchain (Xcode CLT, Homebrew, Ansible).
-- **Provisioning layer** — `provision.sh` runs Ansible playbooks locally
-  (`hosts: localhost`) that configure the environment by role.
+- **Bootstrap layer** — per-OS scripts install and verify the base toolchain:
+  - `bootstrap/bootstrap_macos.sh` — Xcode CLT, Homebrew, Ansible (macOS)
+  - `bootstrap/bootstrap_debian.sh` — apt, Ansible (Debian/Ubuntu)
+- **Provisioning layer** — `provision.sh` auto-detects the OS, runs the matching bootstrap
+  script, then hands off to Ansible playbooks locally (`hosts: localhost`).
+- **Per-OS variables** — `playbooks/vars/{darwin,debian}.yml` hold OS-specific settings
+  (package manager, package lists, binary paths, Git credential helper) so the roles stay
+  OS-agnostic.
 - **Roles** — reusable Ansible roles that keep the playbooks thin and composable:
 
   | Role           | What it configures                                        |
   | -------------- | --------------------------------------------------------- |
-  | `system_tools` | CLI tools via Homebrew (ripgrep, jq, fzf, etc.)        |
+  | `system_tools` | CLI tools (ripgrep, jq, fzf, etc.)                        |
   | `shell_config` | Zsh, Oh My Zsh, shell/runtime aliases                     |
   | `git_github`   | `.gitconfig`, Git aliases, GitHub SSH setup               |
-  | `python_uv`    | `uv`, standalone Python, `mlx-lm`                         |
-  | `llm`          | LLM CLI utilities and local AI desktop apps               |
+  | `python_uv`    | `uv` and standalone Python                                |
+  | `llm`          | LLM CLI utilities, Ollama model, local AI desktop apps    |
 
 Two environment profiles are supported:
 
@@ -37,9 +41,9 @@ Two environment profiles are supported:
 
 ### Prerequisites
 
-- macOS (Apple Silicon or Intel)
+- macOS (Apple Silicon or Intel) or Debian/Ubuntu
 - A terminal and an internet connection
-- Administrator access (used during Homebrew/CLT installs)
+- Administrator access (used during Homebrew/apt/CLT installs)
 
 ### Quick start
 
@@ -56,13 +60,13 @@ cd bamos
 
 ### What each script does
 
-`provision.sh` first runs `bootstrap/bootstrap_macos.sh`, then hands off to
+`provision.sh` detects the OS, runs the matching bootstrap script, then hands off to
 `ansible-playbook` for the chosen role:
 
 ```bash
 ./provision.sh <role> [ansible-options]
 
-# Example: prompt for the Ansible sudo/BECOME password (for cask installs)
+# Example: prompt for the Ansible sudo/BECOME password (for package installs)
 ./provision.sh product -K
 ```
 
@@ -73,7 +77,7 @@ Extra arguments are passed straight through to `ansible-playbook`
 
 - The `product` playbook asks for your **Git user name and email** the first time and
   saves them to `~/.config/vamos/local_vars.yml` (`0600`) so later runs skip the prompt.
-- If Xcode Command Line Tools are missing, the bootstrap script starts the Apple
+- On macOS, if Xcode Command Line Tools are missing, the bootstrap script starts the Apple
   installer popup, then exits — **rerun the script** after the install completes.
 - Homebrew is configured for Apple Silicon (`/opt/homebrew`) automatically.
-
+- On Debian/Ubuntu, package installs run with `sudo` (pass `-K` if prompted).

@@ -8,16 +8,23 @@
 
 set -euo pipefail
 
-BOOTSTRAP_SCRIPT="./bootstrap/bootstrap_macos.sh"
 PLAYBOOKS_DIR="./playbooks"
 
 check_os() {
     local os_name
     os_name="$(uname -s)"
-    if [[ "$os_name" != "Darwin" ]]; then
-        echo "Error: Unsupported OS '${os_name}'. This provisioner currently only supports macOS." >&2
-        exit 1
-    fi
+    case "$os_name" in
+        Darwin)
+            BOOTSTRAP_SCRIPT="./bootstrap/bootstrap_macos.sh"
+            ;;
+        Linux)
+            BOOTSTRAP_SCRIPT="./bootstrap/bootstrap_debian.sh"
+            ;;
+        *)
+            echo "Error: Unsupported OS '${os_name}'. Supported: macOS, Debian/Ubuntu." >&2
+            exit 1
+            ;;
+    esac
 }
 
 usage() {

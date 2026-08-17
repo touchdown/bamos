@@ -39,7 +39,7 @@
   when: not git_github_ssh_key_stat.stat.exists
   changed_when: false
 
-- name: Configure SSH agent to use key for GitHub
+- name: Configure SSH agent to use key for GitHub (with keychain)
   ansible.builtin.blockinfile:
     path: "{{ ansible_facts.env.HOME }}/.ssh/config"
     create: true
@@ -50,6 +50,19 @@
         AddKeysToAgent yes
         UseKeychain yes
         IdentityFile {{ git_github_ssh_key_path }}
+  when: git_github_use_keychain
+
+- name: Configure SSH agent to use key for GitHub
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts.env.HOME }}/.ssh/config"
+    create: true
+    mode: '0600'
+    marker: "# {mark} ANSIBLE MANAGED GITHUB CONFIG"
+    block: |
+      Host github.com
+        AddKeysToAgent yes
+        IdentityFile {{ git_github_ssh_key_path }}
+  when: not git_github_use_keychain
 
 - name: Read generated public key
   ansible.builtin.command: "cat {{ git_github_ssh_key_path }}.pub"

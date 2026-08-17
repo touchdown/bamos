@@ -8,6 +8,10 @@
     local_config_path: "{{ ansible_facts.env.HOME }}/.config/vamos/local_vars.yml"
 
   pre_tasks:
+    - name: Load OS-specific variables
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/vars/{{ ansible_os_family | lower }}.yml"
+
     - name: Check for saved identity config
       ansible.builtin.stat:
         path: "{{ local_config_path }}"

@@ -1,13 +1,9 @@
 ---
-llm_taps:
-  - anomalyco/tap
-
-llm_casks:
-  - ollama
-  - opencode-desktop
-
-llm_formulae:
-  - anomalyco/tap/opencode
+# Defaults are overridden by per-OS vars files in playbooks/vars/
+llm_packages: []
+llm_taps: []
+llm_casks: []
+llm_formulae: []
 
 # Ollama Endpoint & Default Model Settings
 llm_ollama_host: "http://localhost:11434"

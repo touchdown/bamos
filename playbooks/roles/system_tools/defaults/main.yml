@@ -1,8 +1,3 @@
 ---
-system_tools_formulae:
-  - editorconfig-checker
-  - ripgrep
-  - jq
-  - fzf
-  - tree
-  - htop
+# Defaults are overridden by per-OS vars files in playbooks/vars/
+system_tools_packages: []

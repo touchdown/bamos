@@ -2,12 +2,12 @@
 # ------------------------------------------------------------------------------
 # 1. Ensure Zsh & Git are present
 # ------------------------------------------------------------------------------
-- name: Ensure Zsh and Git are installed via Homebrew
-  community.general.homebrew:
-    name:
-      - zsh
-      - git
+- name: Ensure Zsh and Git are installed
+  ansible.builtin.package:
+    name: "{{ item }}"
     state: present
+  loop: "{{ shell_config_shell_packages }}"
+  become: "{{ package_install_become }}"
 
 # ------------------------------------------------------------------------------
 # 2. Oh My Zsh Installation

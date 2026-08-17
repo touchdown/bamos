@@ -7,6 +7,9 @@ shell_config_ohmyzsh_plugins:
   - zsh-autosuggestions
   - zsh-syntax-highlighting
 
+# Defaults are overridden by per-OS vars files in playbooks/vars/
+shell_config_shell_packages: []
+
 shell_config_common_aliases:
   # Navigation
   - { name: "ll", cmd: "ls -alF" }

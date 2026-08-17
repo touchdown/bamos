@@ -3,6 +3,7 @@
 # git_user_name / git_user_email are prompted via vars_prompt in product.yml
 git_github_default_branch: "main"
 git_github_editor: "vim"
+# Defaults are overridden by per-OS vars files in playbooks/vars/
 git_github_credential_helper: "osxkeychain"
 
 # SSH Key Path

@@ -2,6 +2,13 @@
 # ------------------------------------------------------------------------------
 # 1. Taps & Packages
 # ------------------------------------------------------------------------------
+- name: Install LLM system packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ llm_packages }}"
+  become: "{{ package_install_become }}"
+
 - name: Tap custom repositories
   community.general.homebrew_tap:
     name: "{{ item }}"

@@ -1,6 +1,7 @@
 ---
-- name: Install system CLI tools via Homebrew
-  community.general.homebrew:
+- name: Install system CLI tools
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
-  loop: "{{ system_tools_formulae }}"
+  loop: "{{ system_tools_packages }}"
+  become: "{{ package_install_become }}"

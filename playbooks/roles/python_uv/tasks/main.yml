@@ -1,8 +1,9 @@
 ---
-- name: Install uv via Homebrew
-  community.general.homebrew:
-    name: uv
+- name: Install uv
+  ansible.builtin.package:
+    name: "{{ python_uv_package }}"
     state: present
+  become: "{{ package_install_become }}"
 
 - name: Install optimized standalone Python via uv
   ansible.builtin.command: "{{ python_uv_bin_path }} python install {{ python_uv_python_version }}"
