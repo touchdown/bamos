@@ -6,13 +6,8 @@
 
 - name: Install optimized standalone Python via uv
   ansible.builtin.command: "{{ python_uv_bin_path }} python install {{ python_uv_python_version }}"
-  register: python_install
-  changed_when: "'Installing' in python_install.stdout"
-
-- name: Globally provision mlx-lm via uv
-  ansible.builtin.command: "{{ python_uv_bin_path }} tool install mlx-lm --python {{ python_uv_python_version }}"
-  register: mlx_install
-  changed_when: "'Installed' in mlx_install.stdout"
+  register: python_uv_python_install
+  changed_when: "'Installing' in python_uv_python_install.stdout"
 
 - name: Ensure .zshrc file exists
   ansible.builtin.file:
