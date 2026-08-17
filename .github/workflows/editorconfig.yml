@@ -1,7 +1,6 @@
 name: editorconfig
 
 on:
-  push:
   pull_request:
 
 jobs:
