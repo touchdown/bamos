@@ -8,8 +8,17 @@
 
 set -euo pipefail
 
-BOOTSTRAP_SCRIPT="./bootstrap_workstation.sh"
+BOOTSTRAP_SCRIPT="./bootstrap/bootstrap_macos.sh"
 PLAYBOOKS_DIR="./playbooks"
+
+check_os() {
+    local os_name
+    os_name="$(uname -s)"
+    if [[ "$os_name" != "Darwin" ]]; then
+        echo "Error: Unsupported OS '${os_name}'. This provisioner currently only supports macOS." >&2
+        exit 1
+    fi
+}
 
 usage() {
     cat <<EOF
@@ -59,6 +68,8 @@ run_playbook() {
 }
 
 # --- Execution Entrypoint ---
+
+check_os
 
 case "$ROLE" in
     product|operation)

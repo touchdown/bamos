@@ -14,7 +14,7 @@ toolchain on every machine I touch.
 
 This repository provisions macOS development environments from scratch, end to end:
 
-- **Bootstrap layer** — `bootstrap_workstation.sh` installs and verifies the base
+- **Bootstrap layer** — `bootstrap/bootstrap_macos.sh` installs and verifies the base
   toolchain (Xcode CLT, Homebrew, Ansible).
 - **Provisioning layer** — `provision.sh` runs Ansible playbooks locally
   (`hosts: localhost`) that configure the environment by role.
@@ -56,7 +56,7 @@ cd bamos
 
 ### What each script does
 
-`provision.sh` first runs `bootstrap_workstation.sh`, then hands off to
+`provision.sh` first runs `bootstrap/bootstrap_macos.sh`, then hands off to
 `ansible-playbook` for the chosen role:
 
 ```bash
