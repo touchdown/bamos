@@ -1,0 +1,6 @@
+---
+- name: Install system CLI tools via Homebrew
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ system_tools_formulae }}"

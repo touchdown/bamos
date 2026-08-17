@@ -22,6 +22,7 @@ This repository provisions macOS development environments from scratch, end to e
 
   | Role           | What it configures                                        |
   | -------------- | --------------------------------------------------------- |
+  | `system_tools` | CLI tools via Homebrew (ripgrep, jq, fzf, etc.)        |
   | `shell_config` | Zsh, Oh My Zsh, shell/runtime aliases                     |
   | `git_github`   | `.gitconfig`, Git aliases, GitHub SSH setup               |
   | `python_uv`    | `uv`, standalone Python, `mlx-lm`                         |

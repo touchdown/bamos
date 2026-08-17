@@ -55,8 +55,8 @@
         mode: '0600'
 
   roles:
-    # 1. System CLI Tools (ripgrep, jq, fzf, etc.)
-    # - role: system_tools
+    # 1. System CLI Tools (editorconfig-checker, etc.)
+    - role: system_tools
 
     # 2. Desktop GUI Apps & Developer Fonts
     # - role: dev_apps

@@ -1,0 +1,8 @@
+---
+system_tools_formulae:
+  - editorconfig-checker
+  - ripgrep
+  - jq
+  - fzf
+  - tree
+  - htop
