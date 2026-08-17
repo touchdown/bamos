@@ -21,7 +21,21 @@
   loop: "{{ llm_casks }}"
 
 # ------------------------------------------------------------------------------
-# 2. OpenCode Configuration Setup
+# 2. Pull Default Model into Ollama
+# ------------------------------------------------------------------------------
+- name: Check if default Ollama model is present
+  ansible.builtin.command: ollama list
+  register: llm_ollama_list
+  changed_when: false
+  failed_when: false
+
+- name: Pull default model into Ollama
+  ansible.builtin.command: "ollama pull {{ llm_ollama_default_model }}"
+  when: llm_ollama_default_model not in llm_ollama_list.stdout
+  changed_when: false
+
+# ------------------------------------------------------------------------------
+# 3. OpenCode Configuration Setup
 # ------------------------------------------------------------------------------
 - name: Ensure OpenCode config directory exists
   ansible.builtin.file:

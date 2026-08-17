@@ -24,8 +24,8 @@ jobs:
       - name: Install ansible-lint
         run: pipx install ansible-lint
 
-      - name: Install community.general collection
-        run: ansible-galaxy collection install community.general
+      - name: Install collection requirements
+        run: ansible-galaxy collection install -r requirements.yml
 
       - name: Run ansible-lint
         run: ansible-lint playbooks/

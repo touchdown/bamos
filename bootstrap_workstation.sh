@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-PLAYBOOK_NAME="provision_workspace.yml"
-
 echo "🚀 Starting 100% automated infrastructure bootstrap for your Mac..."
 
 # Step 1: Ensure Xcode Command Line Tools are active
