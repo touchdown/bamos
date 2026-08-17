@@ -28,17 +28,18 @@
   loop: "{{ llm_casks }}"
 
 # ------------------------------------------------------------------------------
-# 2. Pull Default Model into Ollama
+# 2. Pull Models into Ollama
 # ------------------------------------------------------------------------------
-- name: Check if default Ollama model is present
+- name: Check which Ollama models are present
   ansible.builtin.command: ollama list
   register: llm_ollama_list
   changed_when: false
   failed_when: false
 
-- name: Pull default model into Ollama
-  ansible.builtin.command: "ollama pull {{ llm_ollama_default_model }}"
-  when: llm_ollama_default_model not in llm_ollama_list.stdout
+- name: Pull models into Ollama
+  ansible.builtin.command: "ollama pull {{ item }}"
+  loop: "{{ llm_ollama_models }}"
+  when: item not in llm_ollama_list.stdout
   changed_when: false
 
 # ------------------------------------------------------------------------------
