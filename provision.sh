@@ -16,8 +16,8 @@ usage() {
 Usage: $0 <role> [ansible-options]
 
 Available roles:
-  product    - Runs playbooks/product.yml
-  operation  - Runs playbooks/operation.yml
+    product    - Runs playbooks/product.yml
+    operation  - Runs playbooks/operation.yml
 
 Extra arguments are passed directly to ansible-playbook.
 EOF
@@ -45,7 +45,7 @@ ensure_bootstrap() {
 run_playbook() {
     local role_name="$1"
     shift # Remove role_name so "$@" holds remaining extra flags
-    
+
     local playbook_path="${PLAYBOOKS_DIR}/${role_name}.yml"
 
     if [[ ! -f "$playbook_path" ]]; then
