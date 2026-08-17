@@ -5,12 +5,12 @@
     state: present
 
 - name: Install optimized standalone Python via uv
-  ansible.builtin.command: "{{ uv_bin_path }} python install {{ python_version }}"
+  ansible.builtin.command: "{{ python_uv_bin_path }} python install {{ python_uv_python_version }}"
   register: python_install
   changed_when: "'Installing' in python_install.stdout"
 
 - name: Globally provision mlx-lm via uv
-  ansible.builtin.command: "{{ uv_bin_path }} tool install mlx-lm --python {{ python_version }}"
+  ansible.builtin.command: "{{ python_uv_bin_path }} tool install mlx-lm --python {{ python_uv_python_version }}"
   register: mlx_install
   changed_when: "'Installed' in mlx_install.stdout"
 
@@ -27,5 +27,5 @@
     path: "{{ ansible_facts.env.HOME }}/.zshrc"
     line: 'export PATH="$HOME/.local/bin:$PATH"'
     state: present
-    create: yes
-
+    create: true
+    mode: '0644'

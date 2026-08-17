@@ -1,0 +1,31 @@
+name: lint
+
+on:
+  pull_request:
+
+jobs:
+  shell:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run shellcheck
+        run: shellcheck --severity=warning bootstrap_workstation.sh provision.sh
+
+  ansible:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ansible-lint
+        run: pipx install ansible-lint
+
+      - name: Install community.general collection
+        run: ansible-galaxy collection install community.general
+
+      - name: Run ansible-lint
+        run: ansible-lint playbooks/

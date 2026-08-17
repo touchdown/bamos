@@ -34,4 +34,3 @@
     src: opencode_config.json.j2
     dest: "{{ ansible_facts.env.HOME }}/.config/opencode/config.json"
     mode: '0644'
-

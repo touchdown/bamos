@@ -13,4 +13,3 @@
 
     # 2. Git Configuration, Custom Aliases, & GitHub SSH Setup
     - role: git_github
-

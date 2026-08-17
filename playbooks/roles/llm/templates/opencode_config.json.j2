@@ -3,15 +3,14 @@
   "provider": {
     "ollama": {
       "options": {
-        "baseURL": "{{ ollama_host }}/v1"
+        "baseURL": "{{ llm_ollama_host }}/v1"
       },
       "models": {
-        "{{ opencode_default_model }}": {
-          "name": "{{ opencode_default_model }}"
+        "{{ llm_opencode_default_model }}": {
+          "name": "{{ llm_opencode_default_model }}"
         }
       }
     }
   },
-  "model": "ollama/{{ opencode_default_model }}"
+  "model": "ollama/{{ llm_opencode_default_model }}"
 }
-

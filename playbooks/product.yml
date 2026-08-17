@@ -72,4 +72,3 @@
 
     # 6. LLM Environment (Ollama, OpenCode Desktop/CLI)
     - role: llm
-

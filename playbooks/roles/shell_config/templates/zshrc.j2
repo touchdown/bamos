@@ -6,11 +6,11 @@
 export ZSH="$HOME/.oh-my-zsh"
 
 # Theme
-ZSH_THEME="{{ ohmyzsh_theme }}"
+ZSH_THEME="{{ shell_config_ohmyzsh_theme }}"
 
 # Plugins
 plugins=(
-{% for plugin in ohmyzsh_plugins %}
+{% for plugin in shell_config_ohmyzsh_plugins %}
   {{ plugin }}
 {% endfor %}
 )
