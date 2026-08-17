@@ -9,4 +9,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: editorconfig-checker/editorconfig-checker-action@v2
+      - uses: editorconfig-checker/action-editorconfig-checker@v2
