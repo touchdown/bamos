@@ -1,14 +1,14 @@
 # bamos
 
-**Ba**sic **mos** ... no — it's short for "bootstrap environments".
+Bamos = *vamos* — "let's go" — where the *b* both stands for **bootstrap** and sounds exactly like the Spanish *v*. So: let's bootstrap.
 
 ## About Me
 
-`bamos` is my personal, repeatable way to stand up a fresh workstation. Instead of
-clicking through installers and pasting aliases by hand, a single command walks a new (or
-re-imaged) machine through the whole pipeline: base toolchain → Ansible → provisioning
-playbooks. The result is a consistent shell, Git identity, and language/LLM toolchain on
-every machine I touch.
+`bamos` (vamos + bootstrap) is my personal, repeatable way to stand up a fresh
+workstation. Instead of clicking through installers and pasting aliases by hand, a single
+command walks a new (or re-imaged) machine through the whole pipeline: base toolchain →
+Ansible → provisioning playbooks. The result is a consistent shell, Git identity, and
+language/LLM toolchain on every machine I touch.
 
 ## Purpose
 
