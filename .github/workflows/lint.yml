@@ -21,11 +21,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install ansible-lint
-        run: pipx install --pip-args="ansible-core==2.18" ansible-lint==6.22
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install ansible-lint and ansible-core
+        run: |
+          uv venv .venv
+          uv pip install --python .venv/bin/python ansible-lint==6.22 ansible-core==2.18
 
       - name: Install collection requirements
-        run: ansible-galaxy collection install -r requirements.yml
+        run: .venv/bin/ansible-galaxy collection install -r requirements.yml
 
       - name: Run ansible-lint
-        run: ansible-lint playbooks/
+        run: .venv/bin/ansible-lint playbooks/
+
