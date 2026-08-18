@@ -1,0 +1,14 @@
+---
+# Git Identity & Core Settings
+# git_user_name / git_user_email are prompted via vars_prompt in product.yml
+git_github_default_branch: "main"
+git_github_editor: "vim"
+# Defaults are overridden by per-OS vars files in playbooks/vars/
+git_github_credential_helper: "osxkeychain"
+
+# SSH Key Path
+git_github_ssh_key_path: "{{ ansible_facts.env.HOME }}/.ssh/id_ed25519"
+
+# Quick Shell Shortcuts
+git_github_shell_aliases:
+  - { name: "g", cmd: "git" }

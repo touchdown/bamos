@@ -1,0 +1,20 @@
+---
+- name: Provision Core Shell and Git Environment (Ops)
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  # ----------------------------------------------------------------------------
+  # Roles executed in precise dependency order
+  # ----------------------------------------------------------------------------
+  pre_tasks:
+    - name: Load OS-specific variables
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/vars/{{ ansible_os_family | lower }}.yml"
+
+  roles:
+    # 1. General Shell Configuration & Non-Git Aliases
+    - role: shell_config
+
+    # 2. Git Configuration, Custom Aliases, & GitHub SSH Setup
+    - role: git_github

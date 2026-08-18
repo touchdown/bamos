@@ -1,0 +1,37 @@
+---
+# macOS-specific variables
+
+# Homebrew installs run as the invoking user
+package_install_become: false
+
+# Packages for each role
+system_tools_packages:
+  - editorconfig-checker
+  - ripgrep
+  - jq
+  - fzf
+  - tree
+  - htop
+
+shell_config_shell_packages:
+  - zsh
+  - git
+
+llm_packages: []
+
+llm_casks:
+  - ollama
+  - opencode-desktop
+
+llm_taps:
+  - anomalyco/tap
+
+llm_formulae:
+  - anomalyco/tap/opencode
+
+# Paths
+python_uv_bin_path: "/opt/homebrew/bin/uv"
+
+# Git
+git_github_credential_helper: "osxkeychain"
+git_github_use_keychain: true

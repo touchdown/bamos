@@ -1,0 +1,27 @@
+# ==============================================================================
+# ANSIBLE MANAGED FILE - DO NOT MODIFY DIRECTLY
+# ==============================================================================
+
+# Path to your Oh My Zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+
+# Theme
+ZSH_THEME="{{ shell_config_ohmyzsh_theme }}"
+
+# Plugins
+plugins=(
+{% for plugin in shell_config_ohmyzsh_plugins %}
+  {{ plugin }}
+{% endfor %}
+)
+
+source $ZSH/oh-my-zsh.sh
+
+# Load custom aliases
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# Ensure local bin is on PATH (for uv, pipx, etc.)
+export PATH="$HOME/.local/bin:$PATH"
+

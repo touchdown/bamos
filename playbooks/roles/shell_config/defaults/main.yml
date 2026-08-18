@@ -1,0 +1,21 @@
+---
+# Oh My Zsh Configuration
+shell_config_ohmyzsh_theme: "robbyrussell"
+shell_config_ohmyzsh_plugins:
+  - git
+  - z
+  - zsh-autosuggestions
+  - zsh-syntax-highlighting
+
+# Defaults are overridden by per-OS vars files in playbooks/vars/
+shell_config_shell_packages: []
+
+shell_config_common_aliases:
+  # Navigation
+  - { name: "ll", cmd: "ls -alF" }
+  - { name: "..", cmd: "cd .." }
+  - { name: "...", cmd: "cd ../.." }
+
+  # System & Tools
+  - { name: "ports", cmd: "netstat -tulanp" }
+  - { name: "reload", cmd: "source ~/.zshrc" }

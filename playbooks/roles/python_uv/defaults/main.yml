@@ -1,0 +1,5 @@
+---
+# Defaults are overridden by per-OS vars files in playbooks/vars/
+python_uv_bin_path: "/opt/homebrew/bin/uv"
+python_uv_python_version: "3.12"
+python_uv_package: "uv"

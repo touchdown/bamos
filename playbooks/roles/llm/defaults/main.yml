@@ -1,0 +1,14 @@
+---
+# Defaults are overridden by per-OS vars files in playbooks/vars/
+llm_packages: []
+llm_taps: []
+llm_casks: []
+llm_formulae: []
+
+# Ollama Endpoint & Default Model Settings
+llm_ollama_host: "http://localhost:11434"
+llm_ollama_default_model: "gemma4:12b-mlx"
+llm_ollama_models:
+  - "{{ llm_ollama_default_model }}"
+  - "qwen3.8:27b-mlx"
+llm_opencode_default_model: "{{ llm_ollama_default_model }}" # or llama3.2, mistral, etc.

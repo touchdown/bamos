@@ -1,0 +1,80 @@
+---
+# ------------------------------------------------------------------------------
+# 1. Deploy .gitconfig
+# ------------------------------------------------------------------------------
+- name: Deploy .gitconfig
+  ansible.builtin.template:
+    src: gitconfig.j2
+    dest: "{{ ansible_facts.env.HOME }}/.gitconfig"
+    mode: '0644'
+
+- name: Ensure Git shell aliases exist in .zshrc
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts.env.HOME }}/.zshrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - GIT ALIASES"
+    create: true
+    mode: '0644'
+    block: |
+      {% for alias in git_github_shell_aliases %}
+      alias {{ alias.name }}="{{ alias.cmd }}"
+      {% endfor %}
+
+# ------------------------------------------------------------------------------
+# 2. SSH Key Provisioning for GitHub
+# ------------------------------------------------------------------------------
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.ssh"
+    state: directory
+    mode: '0700'
+
+- name: Check if Ed25519 SSH key exists
+  ansible.builtin.stat:
+    path: "{{ git_github_ssh_key_path }}"
+  register: git_github_ssh_key_stat
+
+- name: Generate Ed25519 SSH key pair if missing
+  ansible.builtin.command: >
+    ssh-keygen -t ed25519 -C "{{ git_user_email }}" -f "{{ git_github_ssh_key_path }}" -N ""
+  when: not git_github_ssh_key_stat.stat.exists
+  changed_when: false
+
+- name: Configure SSH agent to use key for GitHub (with keychain)
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts.env.HOME }}/.ssh/config"
+    create: true
+    mode: '0600'
+    marker: "# {mark} ANSIBLE MANAGED GITHUB CONFIG"
+    block: |
+      Host github.com
+        AddKeysToAgent yes
+        UseKeychain yes
+        IdentityFile {{ git_github_ssh_key_path }}
+  when: git_github_use_keychain
+
+- name: Configure SSH agent to use key for GitHub
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts.env.HOME }}/.ssh/config"
+    create: true
+    mode: '0600'
+    marker: "# {mark} ANSIBLE MANAGED GITHUB CONFIG"
+    block: |
+      Host github.com
+        AddKeysToAgent yes
+        IdentityFile {{ git_github_ssh_key_path }}
+  when: not git_github_use_keychain
+
+- name: Read generated public key
+  ansible.builtin.command: "cat {{ git_github_ssh_key_path }}.pub"
+  register: git_github_public_key_output
+  changed_when: false
+
+- name: Display public SSH key for GitHub activation
+  ansible.builtin.debug:
+    msg:
+      - "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      - "🔑 COPY THE PUBLIC KEY BELOW AND ADD IT TO YOUR GITHUB PROFILE:"
+      - "🔗 https://github.com/settings/keys"
+      - "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      - "{{ git_github_public_key_output.stdout }}"
+      - "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

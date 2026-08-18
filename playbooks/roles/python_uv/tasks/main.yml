@@ -1,0 +1,27 @@
+---
+- name: Install uv
+  ansible.builtin.package:
+    name: "{{ python_uv_package }}"
+    state: present
+  become: "{{ package_install_become }}"
+
+- name: Install optimized standalone Python via uv
+  ansible.builtin.command: "{{ python_uv_bin_path }} python install {{ python_uv_python_version }}"
+  register: python_uv_python_install
+  changed_when: "'Installing' in python_uv_python_install.stdout"
+
+- name: Ensure .zshrc file exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.zshrc"
+    state: touch
+    mode: '0644'
+    modification_time: preserve
+    access_time: preserve
+
+- name: Inject uv tool binary path into .zshrc
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_facts.env.HOME }}/.zshrc"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    state: present
+    create: true
+    mode: '0644'
