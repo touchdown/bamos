@@ -30,7 +30,10 @@ This repository provisions development environments from scratch, end to end:
   | `shell_config` | Zsh, Oh My Zsh, shell/runtime aliases                     |
   | `git_github`   | `.gitconfig`, Git aliases, GitHub SSH setup               |
   | `python_uv`    | `uv` and standalone Python                                |
-  | `llm`          | LLM CLI utilities, Ollama model, local AI desktop apps    |
+  | `llm`          | LLM CLI utilities, Ollama models, local AI desktop apps  |
+
+The `llm` role pulls `gemma4:12b-mlx` (the default used by OpenCode) and
+`qwen3.8:27b-mlx` into Ollama.
 
 Two environment profiles are supported:
 
@@ -72,6 +75,15 @@ cd bamos
 
 Extra arguments are passed straight through to `ansible-playbook`
 (e.g. `-K`, `-v`, `--check`).
+
+## CI
+
+Pull requests are checked with:
+
+- **editorconfig-checker** — enforces `.editorconfig` style rules
+- **ShellCheck** — lints `bootstrap/*.sh` and `provision.sh`
+- **ansible-lint** — lints the playbooks (installed via uv, with pinned
+  `ansible-lint` 6.22 / `ansible-core` 2.18)
 
 ### First-run notes
 
