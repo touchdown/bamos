@@ -23,7 +23,11 @@
       },
       "models": {
         "{{ llm_basert_default_model }}": {
-          "name": "{{ llm_basert_default_model }}"
+          "name": "{{ llm_basert_default_model }}",
+          "limit": {
+            "context": {{ llm_basert_max_context }},
+            "output": {{ llm_basert_max_output }}
+          }
         }
       }
     }

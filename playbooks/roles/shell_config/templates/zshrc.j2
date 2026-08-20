@@ -24,4 +24,8 @@ fi
 
 # Ensure local bin is on PATH (for uv, pipx, etc.)
 export PATH="$HOME/.local/bin:$PATH"
+{% if llm_runtime | default('ollama') in ['basert', 'all'] %}
+# BaseRT CLI
+export PATH="$HOME/.basert:$PATH"
+{% endif %}
 
