@@ -6,6 +6,10 @@
 
   vars:
     local_config_path: "{{ ansible_facts.env.HOME }}/.config/vamos/local_vars.yml"
+    llm_runtime_choices:
+      "1": "ollama"
+      "2": "basert"
+      "3": "both"
 
   pre_tasks:
     - name: Load OS-specific variables
@@ -54,10 +58,10 @@
       ansible.builtin.pause:
         prompt: |
           Which local LLM runtime(s) should be installed?
-            - ollama : Ollama (default model server)
-            - basert : BaseRT (fastest runtime on Apple Silicon)
-            - both   : install both
-          Enter your choice [ollama]:
+            1) Ollama (default model server)
+            2) BaseRT (fastest runtime on Apple Silicon)
+            3) both (install both)
+          Enter your choice [1]:
       register: llm_runtime_prompt
       when:
         - llm_runtime is not defined
@@ -65,7 +69,7 @@
 
     - name: Resolve LLM runtime choice
       ansible.builtin.set_fact:
-        llm_runtime: "{{ (llm_runtime_prompt.user_input | default('') | trim | lower) if (llm_runtime_prompt.user_input | default('')) else 'ollama' }}"
+        llm_runtime: "{{ llm_runtime_choices.get(((llm_runtime_prompt.user_input | default('') | trim) or '1'), '') }}"
       when: llm_runtime_prompt is defined
 
     - name: Default LLM runtime to Ollama on unsupported platforms
