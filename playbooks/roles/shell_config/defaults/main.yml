@@ -13,9 +13,8 @@ shell_config_shell_packages: []
 shell_config_common_aliases:
   # Navigation
   - { name: "ll", cmd: "ls -alF" }
-  - { name: "..", cmd: "cd .." }
-  - { name: "...", cmd: "cd ../.." }
 
   # System & Tools
   - { name: "ports", cmd: "netstat -tulanp" }
   - { name: "reload", cmd: "source ~/.zshrc" }
+  - { name: "hs", cmd: "history | grep" }
