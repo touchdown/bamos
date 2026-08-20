@@ -8,17 +8,6 @@
     dest: "{{ ansible_facts.env.HOME }}/.gitconfig"
     mode: '0644'
 
-- name: Ensure Git shell aliases exist in .zshrc
-  ansible.builtin.blockinfile:
-    path: "{{ ansible_facts.env.HOME }}/.zshrc"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - GIT ALIASES"
-    create: true
-    mode: '0644'
-    block: |
-      {% for alias in git_github_shell_aliases %}
-      alias {{ alias.name }}="{{ alias.cmd }}"
-      {% endfor %}
-
 # ------------------------------------------------------------------------------
 # 2. SSH Key Provisioning for GitHub
 # ------------------------------------------------------------------------------
