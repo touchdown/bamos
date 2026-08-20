@@ -39,10 +39,10 @@
     llm_runtime: "ollama"
   when:
     - ansible_os_family | lower != 'darwin'
-    - llm_runtime in ['basert', 'both']
+    - llm_runtime in ['basert', 'all']
 
 - name: Install and configure Ollama
-  when: llm_runtime in ['ollama', 'both']
+  when: llm_runtime in ['ollama', 'all']
   block:
     - name: Install Ollama system package (Linux)
       ansible.builtin.package:
@@ -74,7 +74,7 @@
 # ------------------------------------------------------------------------------
 - name: Install and configure BaseRT
   when:
-    - llm_runtime in ['basert', 'both']
+    - llm_runtime in ['basert', 'all']
     - ansible_os_family | lower == 'darwin'
   block:
     - name: Locate basert binary

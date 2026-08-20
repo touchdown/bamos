@@ -9,7 +9,7 @@
     llm_runtime_choices:
       "1": "ollama"
       "2": "basert"
-      "3": "both"
+      "3": "all"
 
   pre_tasks:
     - name: Load OS-specific variables
@@ -60,7 +60,7 @@
           Which local LLM runtime(s) should be installed?
             1) Ollama (default model server)
             2) BaseRT (fastest runtime on Apple Silicon)
-            3) both (install both)
+            3) all (install all)
           Enter your choice [1]:
       register: llm_runtime_prompt
       when:
@@ -81,8 +81,8 @@
 
     - name: Validate LLM runtime choice
       ansible.builtin.fail:
-        msg: "llm_runtime must be one of: ollama, basert, both (got '{{ llm_runtime }}')."
-      when: llm_runtime | lower not in ['ollama', 'basert', 'both']
+        msg: "llm_runtime must be one of: ollama, basert, all (got '{{ llm_runtime }}')."
+      when: llm_runtime | lower not in ['ollama', 'basert', 'all']
 
     - name: Save Git identity locally for future runs
       ansible.builtin.copy:
