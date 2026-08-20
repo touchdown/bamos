@@ -28,22 +28,99 @@
   loop: "{{ llm_casks }}"
 
 # ------------------------------------------------------------------------------
-# 2. Pull Models into Ollama
+# 2. Ollama Runtime & Models
 # ------------------------------------------------------------------------------
-- name: Check which Ollama models are present
-  ansible.builtin.command: ollama list
-  register: llm_ollama_list
-  changed_when: false
-  failed_when: false
+- name: Normalize LLM runtime selection
+  ansible.builtin.set_fact:
+    llm_runtime: "{{ llm_runtime | default('ollama') | lower }}"
 
-- name: Pull models into Ollama
-  ansible.builtin.command: "ollama pull {{ item }}"
-  loop: "{{ llm_ollama_models }}"
-  when: item not in llm_ollama_list.stdout
-  changed_when: false
+- name: Normalize LLM runtime to Ollama on unsupported platforms
+  ansible.builtin.set_fact:
+    llm_runtime: "ollama"
+  when:
+    - ansible_os_family | lower != 'darwin'
+    - llm_runtime in ['basert', 'both']
+
+- name: Install and configure Ollama
+  when: llm_runtime in ['ollama', 'both']
+  block:
+    - name: Install Ollama system package (Linux)
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+        become: "{{ package_install_become }}"
+      loop: "{{ llm_ollama_packages }}"
+
+    - name: Install Ollama desktop app (macOS)
+      community.general.homebrew_cask:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ llm_ollama_casks }}"
+
+    - name: Check which Ollama models are present
+      ansible.builtin.command: ollama list
+      register: llm_ollama_list
+      changed_when: false
+      failed_when: false
+
+    - name: Pull models into Ollama
+      ansible.builtin.command: "ollama pull {{ item }}"
+      loop: "{{ llm_ollama_models }}"
+      when: item not in llm_ollama_list.stdout
+      changed_when: false
 
 # ------------------------------------------------------------------------------
-# 3. OpenCode Configuration Setup
+# 3. BaseRT Runtime & Models (Apple Silicon only)
+# ------------------------------------------------------------------------------
+- name: Install and configure BaseRT
+  when:
+    - llm_runtime in ['basert', 'both']
+    - ansible_os_family | lower == 'darwin'
+  block:
+    - name: Locate basert binary
+      ansible.builtin.command: command -v basert
+      register: llm_basert_found
+      changed_when: false
+      failed_when: false
+
+    - name: Set basert binary path
+      ansible.builtin.set_fact:
+        llm_basert_bin_path: "{{ llm_basert_found.stdout | trim if llm_basert_found.rc == 0 else llm_basert_install_dir ~ '/basert' }}"
+
+    - name: Ensure BaseRT installer cache directory exists
+      ansible.builtin.file:
+        path: "{{ llm_basert_installer_path | dirname }}"
+        state: directory
+        mode: '0755'
+      when: llm_basert_found.rc != 0
+
+    - name: Download BaseRT installer script
+      ansible.builtin.get_url:
+        url: "{{ llm_basert_installer_url }}"
+        dest: "{{ llm_basert_installer_path }}"
+        mode: '0755'
+      when: llm_basert_found.rc != 0
+
+    - name: Run BaseRT installer script
+      ansible.builtin.command: "{{ llm_basert_installer_path }}"
+      args:
+        creates: "{{ llm_basert_install_dir }}/basert"
+      when: llm_basert_found.rc != 0
+
+    - name: Check which BaseRT models are present
+      ansible.builtin.command: "{{ llm_basert_bin_path }} list"
+      register: llm_basert_list
+      changed_when: false
+      failed_when: false
+
+    - name: Pull models into BaseRT
+      ansible.builtin.command: "{{ llm_basert_bin_path }} pull {{ item }}"
+      loop: "{{ llm_basert_models }}"
+      when: item not in llm_basert_list.stdout
+      changed_when: false
+
+# ------------------------------------------------------------------------------
+# 4. OpenCode Configuration Setup
 # ------------------------------------------------------------------------------
 - name: Ensure OpenCode config directory exists
   ansible.builtin.file:
@@ -51,7 +128,7 @@
     state: directory
     mode: '0755'
 
-- name: Deploy OpenCode configuration pointing to Ollama
+- name: Deploy OpenCode configuration pointing to the selected LLM runtime
   ansible.builtin.template:
     src: opencode_config.json.j2
     dest: "{{ ansible_facts.env.HOME }}/.config/opencode/config.json"

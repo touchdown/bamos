@@ -30,10 +30,17 @@ This repository provisions development environments from scratch, end to end:
   | `shell_config` | Zsh, Oh My Zsh, shell/runtime aliases                     |
   | `git_github`   | `.gitconfig`, Git aliases, GitHub SSH setup               |
   | `python_uv`    | `uv` and standalone Python                                |
-  | `llm`          | LLM CLI utilities, Ollama models, local AI desktop apps  |
+  | `llm`          | LLM CLI utilities, Ollama/BaseRT models, local AI desktop apps |
 
-The `llm` role pulls `gemma4:12b-mlx` (the default used by OpenCode) and
-`qwen3.8:27b-mlx` into Ollama.
+The `product` playbook asks which local LLM runtime(s) to install — **Ollama**,
+**BaseRT** (the fastest runtime on Apple Silicon), or **both** — and then pulls
+the default models:
+
+- **Ollama** — `gemma4:12b-mlx` (the default used by OpenCode) and `qwen3.8:27b-mlx`
+- **BaseRT** — `basecompute/gemma-4-26B-A4B-it` and `basecompute/Qwen3.8-27B`
+
+BaseRT is Apple Silicon / macOS 14+ only, so the choice only appears on macOS;
+on Linux the `llm` role always uses Ollama.
 
 Two environment profiles are supported:
 
@@ -89,6 +96,8 @@ Pull requests are checked with:
 
 - The `product` playbook asks for your **Git user name and email** the first time and
   saves them to `~/.config/vamos/local_vars.yml` (`0600`) so later runs skip the prompt.
+  It also asks which local **LLM runtime(s)** to install on every run (override by passing
+  `-e llm_runtime=ollama|basert|both`).
 - On macOS, if Xcode Command Line Tools are missing, the bootstrap script starts the Apple
   installer popup, then exits — **rerun the script** after the install completes.
 - Homebrew is configured for Apple Silicon (`/opt/homebrew`) automatically.

@@ -16,7 +16,9 @@ shell_config_shell_packages:
   - zsh
   - git
 
-llm_packages:
+llm_packages: []
+
+llm_ollama_packages:
   - ollama
 
 llm_casks: []

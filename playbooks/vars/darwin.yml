@@ -12,6 +12,7 @@ system_tools_packages:
   - fzf
   - tree
   - htop
+  - watch
 
 shell_config_shell_packages:
   - zsh
@@ -20,8 +21,10 @@ shell_config_shell_packages:
 llm_packages: []
 
 llm_casks:
-  - ollama
   - opencode-desktop
+
+llm_ollama_casks:
+  - ollama
 
 llm_taps:
   - anomalyco/tap

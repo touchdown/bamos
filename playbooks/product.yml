@@ -50,6 +50,36 @@
         msg: "Git user name and email cannot be empty."
       when: not git_user_name or not git_user_email
 
+    - name: Prompt for LLM runtime choice
+      ansible.builtin.pause:
+        prompt: |
+          Which local LLM runtime(s) should be installed?
+            - ollama : Ollama (default model server)
+            - basert : BaseRT (fastest runtime on Apple Silicon)
+            - both   : install both
+          Enter your choice [ollama]:
+      register: llm_runtime_prompt
+      when:
+        - llm_runtime is not defined
+        - ansible_os_family | lower == 'darwin'
+
+    - name: Resolve LLM runtime choice
+      ansible.builtin.set_fact:
+        llm_runtime: "{{ (llm_runtime_prompt.user_input | default('') | trim | lower) if (llm_runtime_prompt.user_input | default('')) else 'ollama' }}"
+      when: llm_runtime_prompt is defined
+
+    - name: Default LLM runtime to Ollama on unsupported platforms
+      ansible.builtin.set_fact:
+        llm_runtime: "ollama"
+      when:
+        - llm_runtime is not defined
+        - ansible_os_family | lower != 'darwin'
+
+    - name: Validate LLM runtime choice
+      ansible.builtin.fail:
+        msg: "llm_runtime must be one of: ollama, basert, both (got '{{ llm_runtime }}')."
+      when: llm_runtime | lower not in ['ollama', 'basert', 'both']
+
     - name: Save Git identity locally for future runs
       ansible.builtin.copy:
         content: |

@@ -4,6 +4,8 @@ llm_packages: []
 llm_taps: []
 llm_casks: []
 llm_formulae: []
+llm_ollama_packages: []
+llm_ollama_casks: []
 
 # Ollama Endpoint & Default Model Settings
 llm_ollama_host: "http://localhost:11434"
@@ -12,3 +14,13 @@ llm_ollama_models:
   - "{{ llm_ollama_default_model }}"
   - "qwen3.8:27b-mlx"
 llm_opencode_default_model: "{{ llm_ollama_default_model }}" # or llama3.2, mistral, etc.
+
+# BaseRT Endpoint & Default Model Settings (Apple Silicon only)
+llm_basert_install_dir: "{{ ansible_facts.env.HOME }}/.basert"
+llm_basert_installer_url: "https://basecompute.co/install.sh"
+llm_basert_installer_path: "{{ ansible_facts.env.HOME }}/.cache/basert/install.sh"
+llm_basert_host: "http://127.0.0.1:8080"
+llm_basert_default_model: "basecompute/gemma-4-26B-A4B-it"
+llm_basert_models:
+  - "{{ llm_basert_default_model }}"
+  - "basecompute/Qwen3.8-27B"

@@ -1,6 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.schema.json",
   "provider": {
+{%- if llm_runtime in ['ollama', 'both'] %}
     "ollama": {
       "options": {
         "baseURL": "{{ llm_ollama_host }}/v1"
@@ -10,7 +11,23 @@
           "name": "{{ llm_opencode_default_model }}"
         }
       }
+    }{{ ',' if llm_runtime in ['basert', 'both'] else '' }}
+{%- endif %}
+{%- if llm_runtime in ['basert', 'both'] %}
+    "basert": {
+      "name": "BaseRT",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "{{ llm_basert_host }}/v1",
+        "apiKey": "basert"
+      },
+      "models": {
+        "{{ llm_basert_default_model }}": {
+          "name": "{{ llm_basert_default_model }}"
+        }
+      }
     }
+{%- endif %}
   },
-  "model": "ollama/{{ llm_opencode_default_model }}"
+  "model": "{% if llm_runtime in ['ollama', 'both'] %}ollama/{{ llm_opencode_default_model }}{% else %}basert/{{ llm_basert_default_model }}{% endif %}"
 }
