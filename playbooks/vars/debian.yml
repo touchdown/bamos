@@ -11,6 +11,9 @@ system_tools_packages:
   - fzf
   - tree
   - htop
+  - postgresql-client
+
+system_tools_brew_taps: []
 
 shell_config_shell_packages:
   - zsh

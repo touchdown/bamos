@@ -12,6 +12,13 @@ system_tools_packages:
   - fzf
   - tree
   - htop
+  - google-cloud-sdk
+  - terraform
+  - libpq
+
+# Homebrew taps required by system_tools_packages (skipped on non-macOS)
+system_tools_brew_taps:
+  - hashicorp/tap
 
 shell_config_shell_packages:
   - zsh
@@ -31,6 +38,7 @@ llm_formulae:
 
 # Paths
 python_uv_bin_path: "/opt/homebrew/bin/uv"
+system_tools_psql_path: "/opt/homebrew/opt/libpq/bin"
 
 # Git
 git_github_credential_helper: "osxkeychain"

@@ -1,3 +1,4 @@
 ---
 # Defaults are overridden by per-OS vars files in playbooks/vars/
 system_tools_packages: []
+system_tools_brew_taps: []

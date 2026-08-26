@@ -1,4 +1,17 @@
 ---
+- name: Tap Homebrew repositories
+  community.general.homebrew_tap:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ system_tools_brew_taps }}"
+
+- name: Trust Homebrew taps
+  ansible.builtin.command:
+    cmd: "brew trust --tap {{ item }}"
+  loop: "{{ system_tools_brew_taps }}"
+  register: system_tools_brew_trust
+  changed_when: "'Already trusted' not in system_tools_brew_trust.stdout"
+
 - name: Install system CLI tools
   ansible.builtin.package:
     name: "{{ item }}"
