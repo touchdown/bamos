@@ -12,3 +12,15 @@ llm_ollama_models:
   - "{{ llm_ollama_default_model }}"
   - "qwen3.8:27b-mlx"
 llm_opencode_default_model: "{{ llm_ollama_default_model }}" # or llama3.2, mistral, etc.
+
+# AI agent skills installed into OpenCode's global skills directory.
+# Each source is cloned under llm_skill_sources_dir, then every skill folder
+# found beneath skill_path (a directory containing SKILL.md) is copied flat
+# into llm_skills_dir, matching OpenCode's skills/<name>/SKILL.md layout.
+llm_skills_dir: "{{ ansible_facts.env.HOME }}/.config/opencode/skills"
+llm_skill_sources_dir: "{{ ansible_facts.env.HOME }}/.local/share/opencode/ai-skill-sources"
+llm_ai_skill_sources:
+  - name: ui-ux-pro-max-skill
+    repo: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git
+    version: main
+    skill_path: .claude/skills

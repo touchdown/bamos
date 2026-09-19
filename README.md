@@ -30,10 +30,12 @@ This repository provisions development environments from scratch, end to end:
   | `shell_config` | Zsh, Oh My Zsh, shell/runtime aliases                     |
   | `git_github`   | `.gitconfig`, Git aliases, GitHub SSH setup               |
   | `python_uv`    | `uv` and standalone Python                                |
-  | `llm`          | LLM CLI utilities, Ollama models, local AI desktop apps  |
+  | `llm`          | LLM CLI utilities, Ollama models, local AI desktop apps, AI agent skills |
 
 The `llm` role pulls `gemma4:12b-mlx` (the default used by OpenCode) and
-`qwen3.8:27b-mlx` into Ollama.
+`qwen3.8:27b-mlx` into Ollama, and installs the AI skillset defined by
+`llm_ai_skill_sources` (e.g. [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill))
+into `~/.config/opencode/skills/`.
 
 Two environment profiles are supported:
 

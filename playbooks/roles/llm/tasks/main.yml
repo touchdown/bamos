@@ -56,3 +56,41 @@
     src: opencode_config.json.j2
     dest: "{{ ansible_facts.env.HOME }}/.config/opencode/config.json"
     mode: '0644'
+
+# ------------------------------------------------------------------------------
+# 4. AI Agent Skills
+# ------------------------------------------------------------------------------
+- name: Ensure AI skills directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ llm_skills_dir }}"
+    - "{{ llm_skill_sources_dir }}"
+
+- name: Clone or update AI skill source repositories
+  ansible.builtin.git:
+    repo: "{{ item.repo }}"
+    dest: "{{ llm_skill_sources_dir }}/{{ item.name }}"
+    version: "{{ item.version | default('HEAD') }}"
+  loop: "{{ llm_ai_skill_sources }}"
+
+- name: Discover bundled skills in each source
+  ansible.builtin.find:
+    paths: "{{ llm_skill_sources_dir }}/{{ item.name }}/{{ item.skill_path | default('') }}"
+    patterns: SKILL.md
+    recurse: true
+    file_type: file
+  loop: "{{ llm_ai_skill_sources }}"
+  register: llm_ai_skill_find
+
+- name: Install bundled skills into the OpenCode global skills directory
+  ansible.builtin.copy:
+    src: "{{ item }}/"
+    dest: "{{ llm_skills_dir }}/{{ item | basename }}/"
+    mode: preserve
+  loop: >-
+    {{ llm_ai_skill_find.results
+       | map(attribute='files') | flatten
+       | map(attribute='path') | map('dirname') | unique | sort }}
