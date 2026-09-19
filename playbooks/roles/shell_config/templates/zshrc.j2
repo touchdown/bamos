@@ -25,3 +25,8 @@ fi
 # Ensure local bin is on PATH (for uv, pipx, etc.)
 export PATH="$HOME/.local/bin:$PATH"
 
+{% if system_tools_psql_path is defined and system_tools_psql_path %}
+# psql client (libpq is keg-only in Homebrew)
+export PATH="{{ system_tools_psql_path }}:$PATH"
+{% endif %}
+
