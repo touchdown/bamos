@@ -63,24 +63,7 @@
   loop: "{{ coding_agent_spec.casks }}"
 
 # ------------------------------------------------------------------------------
-# 4. OpenCode provider configuration
-# ------------------------------------------------------------------------------
-- name: Ensure OpenCode config directory exists
-  ansible.builtin.file:
-    path: "{{ ansible_facts.env.HOME }}/.config/opencode"
-    state: directory
-    mode: '0755'
-  when: coding_agent == 'opencode'
-
-- name: Deploy OpenCode configuration pointing to Ollama
-  ansible.builtin.template:
-    src: opencode_config.json.j2
-    dest: "{{ ansible_facts.env.HOME }}/.config/opencode/config.json"
-    mode: '0644'
-  when: coding_agent == 'opencode'
-
-# ------------------------------------------------------------------------------
-# 5. AI Skills
+# 4. AI Skills
 # ------------------------------------------------------------------------------
 - name: Clone AI skills repository
   ansible.builtin.git:
@@ -119,7 +102,7 @@
   loop: "{{ coding_agent_skills_list }}"
 
 # ------------------------------------------------------------------------------
-# 6. Hindsight long-term memory
+# 5. Hindsight long-term memory
 # ------------------------------------------------------------------------------
 - name: Detect npx for the Hindsight installer
   ansible.builtin.command:

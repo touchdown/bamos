@@ -8,7 +8,7 @@ Bamos = *vamos* — "let's go" — where the *b* both stands for **bootstrap** a
 workstation. Instead of clicking through installers and pasting aliases by hand, a single
 command walks a new (or re-imaged) machine through the whole pipeline: base toolchain →
 Ansible → provisioning playbooks. The result is a consistent shell, Git identity, and
-language/LLM toolchain on every machine I touch.
+language/AI coding-agent toolchain on every machine I touch.
 
 ## Purpose
 
@@ -30,18 +30,14 @@ This repository provisions development environments from scratch, end to end:
   | `shell_config` | Zsh, Oh My Zsh, shell/runtime aliases                     |
   | `git_github`   | `.gitconfig`, Git aliases, GitHub SSH setup               |
   | `python_uv`    | `uv` and standalone Python                                |
-  | `llm_runtime`  | Ollama and local models                                   |
-  | `coding_agent` | Selected coding CLI (Claude Code or OpenCode), its config, Anthropic AI skills, Hindsight memory |
-
-The `llm_runtime` role pulls `gemma4:12b-mlx` (the default used by OpenCode) and
-`qwen3.8:27b-mlx` into Ollama.
+  | `coding_agent` | Selected coding CLI (Claude Code or OpenCode), Anthropic AI skills, Hindsight memory |
 
 The `coding_agent` role prompts for one of `claude-code` / `opencode` (persisted
 for future runs) and installs only that agent, its skills, and its memory wiring.
 
 Two environment profiles are supported:
 
-- **`product`** — full dev environment: shell + Git + Python + LLM toolchain
+- **`product`** — full dev environment: shell + Git + Python + coding agent (skills, Hindsight memory)
 - **`operation`** — minimal ops environment: shell + Git only
 
 ## Instructions

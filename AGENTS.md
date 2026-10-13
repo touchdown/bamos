@@ -7,7 +7,7 @@ Provisioning repo: bootstraps + Ansible playbooks build dev workstations.
 - `bootstrap/bootstrap_{macos,debian}.sh` — base toolchain (CLT/Homebrew/apt, Ansible). Entry: `./provision.sh <product|operation>`.
 - `playbooks/{product,operations}.yml` — `hosts: localhost`. product = full env; operations = shell + git.
 - `playbooks/roles/*` — thin playbooks, logic in roles. OS-specific values only in `playbooks/vars/{darwin,debian}.yml`.
-- Role order (product.yml = dependencies): `system_tools` → `shell_config` → `git_github` → `python_uv` → `llm_runtime` → `coding_agent`.
+- Role order (product.yml = dependencies): `system_tools` → `shell_config` → `git_github` → `python_uv` → `coding_agent`.
 
 ## Golden rule
 

@@ -95,8 +95,5 @@
     # 5. Language Tooling (Python 3.12 & uv)
     - role: python_uv
 
-    # 6. Local LLM Runtime (Ollama & models)
-    - role: llm_runtime
-
-    # 7. Coding Agent (selected CLI + config, AI skills, Hindsight memory)
+    # 6. Coding Agent (selected CLI + config, AI skills, Hindsight memory)
     - role: coding_agent

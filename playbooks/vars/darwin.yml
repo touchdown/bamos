@@ -24,15 +24,6 @@ shell_config_shell_packages:
   - zsh
   - git
 
-llm_runtime_packages: []
-
-llm_runtime_casks:
-  - ollama
-
-llm_runtime_taps: []
-
-llm_runtime_formulae: []
-
 # Coding agent role: shared tooling and per-agent install specs
 coding_agent_common_formulae:
   - node

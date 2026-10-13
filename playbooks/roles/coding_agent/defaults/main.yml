@@ -22,12 +22,6 @@ coding_agent_install_map:
     formulae: []
     casks: []
 
-# OpenCode provider config (deployed only when coding_agent == 'opencode')
-# Falls back to literals so the role also runs standalone; in product.yml the
-# llm_runtime role defaults supply the real values.
-coding_agent_ollama_host: "{{ llm_runtime_ollama_host | default('http://localhost:11434') }}"
-coding_agent_default_model: "{{ llm_runtime_ollama_default_model | default('gemma4:12b-mlx') }}"
-
 # ------------------------------------------------------------------------------
 # AI Skills (anthropics/skills) deployed to the selected agent
 # ------------------------------------------------------------------------------
