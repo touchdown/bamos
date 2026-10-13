@@ -30,10 +30,14 @@ This repository provisions development environments from scratch, end to end:
   | `shell_config` | Zsh, Oh My Zsh, shell/runtime aliases                     |
   | `git_github`   | `.gitconfig`, Git aliases, GitHub SSH setup               |
   | `python_uv`    | `uv` and standalone Python                                |
-  | `llm`          | LLM CLI utilities, Ollama models, local AI desktop apps  |
+  | `llm_runtime`  | Ollama and local models                                   |
+  | `coding_agent` | Selected coding CLI (Claude Code or OpenCode), its config, Anthropic AI skills, Hindsight memory |
 
-The `llm` role pulls `gemma4:12b-mlx` (the default used by OpenCode) and
+The `llm_runtime` role pulls `gemma4:12b-mlx` (the default used by OpenCode) and
 `qwen3.8:27b-mlx` into Ollama.
+
+The `coding_agent` role prompts for one of `claude-code` / `opencode` (persisted
+for future runs) and installs only that agent, its skills, and its memory wiring.
 
 Two environment profiles are supported:
 

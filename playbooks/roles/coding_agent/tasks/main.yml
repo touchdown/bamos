@@ -1,0 +1,234 @@
+---
+# ------------------------------------------------------------------------------
+# 1. Resolve the selected agent
+# ------------------------------------------------------------------------------
+- name: Resolve coding agent install spec
+  ansible.builtin.set_fact:
+    coding_agent_spec: "{{ coding_agent_install_map[coding_agent] }}"
+
+# ------------------------------------------------------------------------------
+# 2. Shared tooling (Node.js etc.)
+# ------------------------------------------------------------------------------
+- name: Install shared OS packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ coding_agent_common_packages }}"
+  become: "{{ package_install_become }}"
+
+- name: Tap shared Homebrew repositories
+  community.general.homebrew_tap:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ coding_agent_common_taps }}"
+
+- name: Install shared Homebrew formulae
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ coding_agent_common_formulae }}"
+
+- name: Install shared Homebrew casks
+  community.general.homebrew_cask:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ coding_agent_common_casks }}"
+
+# ------------------------------------------------------------------------------
+# 3. Selected coding agent
+# ------------------------------------------------------------------------------
+- name: Install coding agent OS packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ coding_agent_spec.packages }}"
+  become: "{{ package_install_become }}"
+
+- name: Tap coding agent Homebrew repositories
+  community.general.homebrew_tap:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ coding_agent_spec.taps }}"
+
+- name: Install coding agent Homebrew formulae
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ coding_agent_spec.formulae }}"
+
+- name: Install coding agent Homebrew casks
+  community.general.homebrew_cask:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ coding_agent_spec.casks }}"
+
+# ------------------------------------------------------------------------------
+# 4. OpenCode provider configuration
+# ------------------------------------------------------------------------------
+- name: Ensure OpenCode config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.config/opencode"
+    state: directory
+    mode: '0755'
+  when: coding_agent == 'opencode'
+
+- name: Deploy OpenCode configuration pointing to Ollama
+  ansible.builtin.template:
+    src: opencode_config.json.j2
+    dest: "{{ ansible_facts.env.HOME }}/.config/opencode/config.json"
+    mode: '0644'
+  when: coding_agent == 'opencode'
+
+# ------------------------------------------------------------------------------
+# 5. AI Skills
+# ------------------------------------------------------------------------------
+- name: Clone AI skills repository
+  ansible.builtin.git:
+    repo: "{{ coding_agent_skills_repo }}"
+    dest: "{{ coding_agent_skills_cache_dir }}"
+    version: "{{ coding_agent_skills_version }}"
+    depth: 1
+    force: true
+
+- name: Verify requested skills exist in the repository
+  ansible.builtin.stat:
+    path: "{{ coding_agent_skills_cache_dir }}/skills/{{ item }}/SKILL.md"
+  loop: "{{ coding_agent_skills_list }}"
+  register: coding_agent_skills_stat
+
+- name: Fail when a requested skill is missing
+  ansible.builtin.fail:
+    msg: "Skill '{{ item.item }}' not found in {{ coding_agent_skills_repo }}"
+  loop: "{{ coding_agent_skills_stat.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: not item.stat.exists
+
+- name: Ensure skills directory exists for the selected agent
+  ansible.builtin.file:
+    path: "{{ coding_agent_skills_dir_map[coding_agent] }}"
+    state: directory
+    mode: '0755'
+
+- name: Deploy AI skills to the selected agent
+  ansible.builtin.copy:
+    src: "{{ coding_agent_skills_cache_dir }}/skills/{{ item }}/"
+    dest: "{{ coding_agent_skills_dir_map[coding_agent] }}/{{ item }}"
+    remote_src: true
+    mode: preserve
+  loop: "{{ coding_agent_skills_list }}"
+
+# ------------------------------------------------------------------------------
+# 6. Hindsight long-term memory
+# ------------------------------------------------------------------------------
+- name: Detect npx for the Hindsight installer
+  ansible.builtin.command:
+    cmd: npx --version
+  register: coding_agent_npx
+  changed_when: false
+  failed_when: false
+  when: coding_agent_hindsight_enabled
+
+- name: Fail when npx is missing but Hindsight is enabled
+  ansible.builtin.fail:
+    msg: "npx (Node.js) is required to install Hindsight; disable with coding_agent_hindsight_enabled=false"
+  when:
+    - coding_agent_hindsight_enabled
+    - coding_agent_npx.rc != 0
+
+- name: Detect uv for the local Hindsight daemon
+  ansible.builtin.command:
+    cmd: uv --version
+  register: coding_agent_uv
+  changed_when: false
+  failed_when: false
+  when:
+    - coding_agent_hindsight_enabled
+    - coding_agent_hindsight_server_mode == 'daemon'
+
+- name: Fail when uv is missing in daemon mode
+  ansible.builtin.fail:
+    msg: "uv is required for the local Hindsight daemon (run the python_uv role first)"
+  when:
+    - coding_agent_hindsight_enabled
+    - coding_agent_hindsight_server_mode == 'daemon'
+    - coding_agent_uv.rc != 0
+
+# Daemon mode on macOS compiles litellm from source, which needs Rust
+- name: Check for Rust toolchain
+  ansible.builtin.stat:
+    path: "{{ ansible_facts.env.HOME }}/.cargo/bin/rustc"
+  register: coding_agent_rustc
+  when:
+    - coding_agent_hindsight_enabled
+    - coding_agent_hindsight_server_mode == 'daemon'
+    - ansible_facts.os_family == 'Darwin'
+
+- name: Download rustup installer
+  ansible.builtin.get_url:
+    url: https://sh.rustup.rs
+    dest: "{{ ansible_facts.env.TMP | default('/tmp') }}/rustup-init.sh"
+    mode: '0755'
+  when:
+    - coding_agent_hindsight_enabled
+    - coding_agent_hindsight_server_mode == 'daemon'
+    - ansible_facts.os_family == 'Darwin'
+    - not coding_agent_rustc.stat.exists
+
+- name: Install Rust via rustup
+  ansible.builtin.command:
+    cmd: "{{ ansible_facts.env.TMP | default('/tmp') }}/rustup-init.sh -y"
+  changed_when: true
+  when:
+    - coding_agent_hindsight_enabled
+    - coding_agent_hindsight_server_mode == 'daemon'
+    - ansible_facts.os_family == 'Darwin'
+    - not coding_agent_rustc.stat.exists
+
+- name: Install Hindsight for the selected coding agent
+  ansible.builtin.command:
+    cmd: >-
+      npx -y {{ coding_agent_hindsight_package }} install {{ coding_agent }}
+      --server {{ coding_agent_hindsight_server_mode }}
+      {{ '--api-url ' ~ coding_agent_hindsight_api_url if coding_agent_hindsight_api_url else '' }}
+      {{ '--api-token ' ~ coding_agent_hindsight_api_token if coding_agent_hindsight_api_token else '' }}
+  environment:
+    PATH: "{{ ansible_facts.env.HOME }}/.cargo/bin:{{ ansible_facts.env.PATH }}"
+  no_log: "{{ coding_agent_hindsight_api_token | length > 0 }}"
+  # The installer is idempotent but always rewrites host configs
+  changed_when: true
+  when: coding_agent_hindsight_enabled
+
+- name: Detect the Claude Code CLI
+  ansible.builtin.command:
+    cmd: claude --version
+  register: coding_agent_claude_cli
+  changed_when: false
+  failed_when: false
+  when:
+    - coding_agent_hindsight_enabled
+    - coding_agent == 'claude-code'
+
+- name: Warn when the Claude Code CLI is missing
+  ansible.builtin.debug:
+    msg: >-
+      claude CLI not found: Hindsight hooks and skill are installed for Claude
+      Code, but its MCP server could not be registered. Install Claude Code and
+      re-run this role to complete the wiring.
+  when:
+    - coding_agent_hindsight_enabled
+    - coding_agent == 'claude-code'
+    - coding_agent_claude_cli.rc != 0
+
+- name: Verify Hindsight configuration was written
+  ansible.builtin.stat:
+    path: "{{ coding_agent_hindsight_config_path }}"
+  register: coding_agent_hindsight_config
+  when: coding_agent_hindsight_enabled
+
+- name: Fail when Hindsight configuration is missing
+  ansible.builtin.fail:
+    msg: "Hindsight installer did not write {{ coding_agent_hindsight_config_path }}"
+  when:
+    - coding_agent_hindsight_enabled
+    - not coding_agent_hindsight_config.stat.exists

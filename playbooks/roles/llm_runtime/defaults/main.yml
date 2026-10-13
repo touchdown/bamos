@@ -1,0 +1,13 @@
+---
+# Defaults are overridden by per-OS vars files in playbooks/vars/
+llm_runtime_packages: []
+llm_runtime_taps: []
+llm_runtime_casks: []
+llm_runtime_formulae: []
+
+# Ollama Endpoint & Default Model Settings
+llm_runtime_ollama_host: "http://localhost:11434"
+llm_runtime_ollama_default_model: "gemma4:12b-mlx"
+llm_runtime_ollama_models:
+  - "{{ llm_runtime_ollama_default_model }}"
+  - "qwen3.8:27b-mlx"

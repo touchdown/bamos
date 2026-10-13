@@ -1,0 +1,73 @@
+---
+# The selected agent (claude-code | opencode) is prompted for and persisted
+# by product.yml as the `coding_agent` fact.
+
+# Shared tooling installed regardless of agent choice
+# (Node.js is required by Claude Code and the Hindsight installer)
+coding_agent_common_packages: []
+coding_agent_common_taps: []
+coding_agent_common_formulae: []
+coding_agent_common_casks: []
+
+# Per-agent install specs, overridden in playbooks/vars/<os>.yml
+coding_agent_install_map:
+  opencode:
+    packages: []
+    taps: []
+    formulae: []
+    casks: []
+  claude-code:
+    packages: []
+    taps: []
+    formulae: []
+    casks: []
+
+# OpenCode provider config (deployed only when coding_agent == 'opencode')
+# Falls back to literals so the role also runs standalone; in product.yml the
+# llm_runtime role defaults supply the real values.
+coding_agent_ollama_host: "{{ llm_runtime_ollama_host | default('http://localhost:11434') }}"
+coding_agent_default_model: "{{ llm_runtime_ollama_default_model | default('gemma4:12b-mlx') }}"
+
+# ------------------------------------------------------------------------------
+# AI Skills (anthropics/skills) deployed to the selected agent
+# ------------------------------------------------------------------------------
+coding_agent_skills_repo: "https://github.com/anthropics/skills.git"
+coding_agent_skills_version: "main"
+coding_agent_skills_cache_dir: "{{ ansible_facts.env.HOME }}/.cache/vamos/anthropic-skills"
+coding_agent_skills_dir_map:
+  opencode: "{{ ansible_facts.env.HOME }}/.config/opencode/skills"
+  claude-code: "{{ ansible_facts.env.HOME }}/.claude/skills"
+coding_agent_skills_list:
+  - academy-guide
+  - algorithmic-art
+  - brand-guidelines
+  - canvas-design
+  - claude-api
+  - discernment-nudge
+  - doc-coauthoring
+  - docx
+  - frontend-design
+  - internal-comms
+  - mcp-builder
+  - pdf
+  - pptx
+  - skill-creator
+  - slack-gif-creator
+  - theme-factory
+  - web-artifacts-builder
+  - webapp-testing
+  - xlsx
+
+# ------------------------------------------------------------------------------
+# Hindsight long-term memory for the selected agent
+# ------------------------------------------------------------------------------
+coding_agent_hindsight_enabled: true
+coding_agent_hindsight_package: "@vectorize-io/hindsight-coding-agents"
+# Where memory lives: cloud | self-hosted | daemon
+# daemon = local hindsight-embed on 127.0.0.1:9077 (needs uv, Rust on macOS,
+# and an LLM API key such as OPENAI_API_KEY/ANTHROPIC_API_KEY for extraction)
+coding_agent_hindsight_server_mode: "daemon"
+# Only used for the matching server mode
+coding_agent_hindsight_api_url: ""
+coding_agent_hindsight_api_token: ""
+coding_agent_hindsight_config_path: "{{ ansible_facts.env.HOME }}/.hindsight/coding-agent.json"
