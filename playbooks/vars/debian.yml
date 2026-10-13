@@ -19,12 +19,25 @@ shell_config_shell_packages:
   - zsh
   - git
 
-llm_packages:
-  - ollama
+# Coding agent role: shared tooling and per-agent install specs
+# Note: on Debian the claude-code CLI is installed via npm (nodejs+npm below
+# provide it: `npm install -g @anthropic-ai/claude-code`); opencode has no
+# apt package, install via its official script if selected.
+coding_agent_common_packages:
+  - nodejs
+  - npm
 
-llm_casks: []
-llm_taps: []
-llm_formulae: []
+coding_agent_install_map:
+  opencode:
+    packages: []
+    taps: []
+    formulae: []
+    casks: []
+  claude-code:
+    packages: []
+    taps: []
+    formulae: []
+    casks: []
 
 # Paths
 python_uv_bin_path: "/usr/bin/uv"

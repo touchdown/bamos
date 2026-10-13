@@ -24,17 +24,25 @@ shell_config_shell_packages:
   - zsh
   - git
 
-llm_packages: []
+# Coding agent role: shared tooling and per-agent install specs
+coding_agent_common_formulae:
+  - node
 
-llm_casks:
-  - ollama
-  - opencode-desktop
-
-llm_taps:
-  - anomalyco/tap
-
-llm_formulae:
-  - anomalyco/tap/opencode
+coding_agent_install_map:
+  opencode:
+    packages: []
+    taps:
+      - anomalyco/tap
+    formulae:
+      - anomalyco/tap/opencode
+    casks:
+      - opencode-desktop
+  claude-code:
+    packages: []
+    taps: []
+    formulae: []
+    casks:
+      - claude-code
 
 # Paths
 python_uv_bin_path: "/opt/homebrew/bin/uv"

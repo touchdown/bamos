@@ -6,6 +6,9 @@
 
   vars:
     local_config_path: "{{ ansible_facts.env.HOME }}/.config/vamos/local_vars.yml"
+    coding_agent_choices:
+      '1': claude-code
+      '2': opencode
 
   pre_tasks:
     - name: Load OS-specific variables
@@ -40,6 +43,23 @@
       register: git_email_prompt
       when: git_user_email is not defined
 
+    - name: Prompt for coding agent
+      ansible.builtin.pause:
+        prompt: "Coding agent - 1) claude-code  2) opencode. Enter number:"
+      register: coding_agent_prompt
+      when: coding_agent is not defined
+
+    - name: Resolve coding agent from numeric selection
+      ansible.builtin.set_fact:
+        coding_agent: "{{ coding_agent_choices[coding_agent_raw | trim] | default(coding_agent_raw | lower | trim, true) }}"
+      vars:
+        coding_agent_raw: "{{ coding_agent | default((coding_agent_prompt | default({})).user_input | default('')) }}"
+
+    - name: Validate coding agent
+      ansible.builtin.fail:
+        msg: "Coding agent must be one of: 1 (claude-code), 2 (opencode) - got '{{ coding_agent }}'."
+      when: coding_agent not in coding_agent_choices.values()
+
     - name: Resolve Git identity
       ansible.builtin.set_fact:
         git_user_name: "{{ git_user_name | default((git_name_prompt | default({})).user_input | default('')) }}"
@@ -50,11 +70,12 @@
         msg: "Git user name and email cannot be empty."
       when: not git_user_name or not git_user_email
 
-    - name: Save Git identity locally for future runs
+    - name: Save identity config locally for future runs
       ansible.builtin.copy:
         content: |
           git_user_name: "{{ git_user_name }}"
           git_user_email: "{{ git_user_email }}"
+          coding_agent: "{{ coding_agent }}"
         dest: "{{ local_config_path }}"
         mode: '0600'
 
@@ -74,5 +95,5 @@
     # 5. Language Tooling (Python 3.12 & uv)
     - role: python_uv
 
-    # 6. LLM Environment (Ollama, OpenCode Desktop/CLI)
-    - role: llm
+    # 6. Coding Agent (selected CLI + config, AI skills, Hindsight memory)
+    - role: coding_agent
